@@ -2,12 +2,13 @@ let map;
 let service;
 let autocomplete;
 let marker;
+let activeTab = null; // Track the currently expanded tab
 
 // Initialize the autocomplete feature for location input
 function initializeAutocomplete() {
     const input = document.getElementById('location-input');
     autocomplete = new google.maps.places.Autocomplete(input);
-    autocomplete.setFields(['place_id', 'geometry', 'name']);
+    autocomplete.setFields(['place_id', 'geometry', 'name', 'rating', 'user_ratings_total', 'formatted_address', 'photos', 'types']);
     autocomplete.addListener('place_changed', onPlaceChanged);
 }
 
@@ -22,16 +23,17 @@ function onPlaceChanged() {
     }
 }
 
-// Initialize the map and service
-function initializeMap(latLng) {
-    // Create a new map centered at the selected location
-    map = new google.maps.Map(document.getElementById('map'), {
+// Initialize the map
+function initializeMap(latLng, mapContainer) {
+    // If mapContainer is passed, render map in the dynamic tab
+    const mapTarget = mapContainer ? mapContainer : document.getElementById('map');
+    map = new google.maps.Map(mapTarget, {
         center: latLng,
         zoom: 14
     });
 
     // Add a marker at the selected location
-    marker = new google.maps.Marker({
+    new google.maps.Marker({
         position: latLng,
         map: map,
         title: 'Selected Location'
@@ -51,7 +53,7 @@ function fetchSuggestions() {
             if (status === 'OK') {
                 const latLng = results[0].geometry.location;
                 initializeMap(latLng);
-                
+
                 const interests = document.getElementById('interests').value;
                 const budget = document.getElementById('budget-input').value;
 
@@ -67,29 +69,55 @@ function fetchSuggestions() {
     }
 }
 
-// Function to display details and place marker on the map
-function showDetailsAndMarker(place) {
-    // Clear existing marker
-    if (marker) marker.setMap(null);
+// Function to display map, details, short summary, and popularity indicator
+function displayDynamicTab(place, parentElement) {
+    // Toggle expansion for each suggestion tab
+    if (activeTab && activeTab !== parentElement) {
+        activeTab.classList.remove('expanded');
+        activeTab.querySelector('.dynamic-container').remove();
+    }
 
-    // Add a marker for the selected place
-    marker = new google.maps.Marker({
-        position: place.geometry.location,
-        map: map,
-        title: place.name
-    });
+    // Mark the current active tab
+    activeTab = parentElement;
 
-    // Update the details section
-    const details = document.getElementById('details-content');
+    // Expand the clicked suggestion tab
+    parentElement.classList.toggle('expanded');
+
+    // Create a container for the map and details
+    const dynamicContainer = document.createElement('div');
+    dynamicContainer.className = 'dynamic-container';
+
+    // Add a map container
+    const mapContainer = document.createElement('div');
+    mapContainer.className = 'dynamic-map';
+    mapContainer.style.width = '100%';
+    mapContainer.style.height = '300px';
+    dynamicContainer.appendChild(mapContainer);
+
+    // Add a details container with additional information (summary, popularity)
+    const detailsContainer = document.createElement('div');
+    detailsContainer.className = 'dynamic-details';
     const imageUrl = place.photos ? place.photos[0].getUrl({ maxWidth: 300 }) : 'default-image.jpg';
     const mapLink = `https://www.google.com/maps/place/?q=place_id:${place.place_id}`;
 
-    details.innerHTML = `
+    const summary = place.types.join(', ') || 'No description available.';
+    const popularity = place.rating ? `${place.rating} / 5` : 'Not rated yet';
+
+    detailsContainer.innerHTML = `
         <h3>${place.name}</h3>
         <img src="${imageUrl}" alt="${place.name}">
-        <p>${place.vicinity || 'No address available'}</p>
+        <p>${place.formatted_address || 'No address available'}</p>
+        <p><strong>Summary:</strong> ${summary}</p>
+        <p><strong>Popularity:</strong> ${popularity}</p>
         <a href="${mapLink}" target="_blank">View on Google Maps</a>
     `;
+    dynamicContainer.appendChild(detailsContainer);
+
+    // Insert the dynamic container after the clicked suggestion
+    parentElement.appendChild(dynamicContainer);
+
+    // Initialize the map inside the dynamic tab
+    initializeMap(place.geometry.location, mapContainer);
 }
 
 // Fetch and display tourist attractions
@@ -125,7 +153,7 @@ function fetchTouristAttractions(latLng, interests) {
 
                 li.appendChild(img);
                 li.appendChild(infoDiv);
-                li.addEventListener('click', () => showDetailsAndMarker(result)); // Add click event
+                li.addEventListener('click', () => displayDynamicTab(result, li)); // Add dynamic tab on click
                 attractionsList.appendChild(li);
             });
         } else {
@@ -134,7 +162,7 @@ function fetchTouristAttractions(latLng, interests) {
     });
 }
 
-// Fetch and display staying options
+// Apply the same logic for staying options and food options
 function fetchStayingOptions(latLng, budget) {
     const request = {
         location: latLng,
@@ -166,7 +194,7 @@ function fetchStayingOptions(latLng, budget) {
 
                 li.appendChild(img);
                 li.appendChild(infoDiv);
-                li.addEventListener('click', () => showDetailsAndMarker(result)); // Add click event
+                li.addEventListener('click', () => displayDynamicTab(result, li)); // Add dynamic tab on click
                 stayList.appendChild(li);
             });
         } else {
@@ -175,7 +203,6 @@ function fetchStayingOptions(latLng, budget) {
     });
 }
 
-// Fetch and display local food options
 function fetchLocalFood(latLng, budget) {
     const request = {
         location: latLng,
@@ -207,7 +234,7 @@ function fetchLocalFood(latLng, budget) {
 
                 li.appendChild(img);
                 li.appendChild(infoDiv);
-                li.addEventListener('click', () => showDetailsAndMarker(result)); // Add click event
+                li.addEventListener('click', () => displayDynamicTab(result, li)); // Add dynamic tab on click
                 foodList.appendChild(li);
             });
         } else {
