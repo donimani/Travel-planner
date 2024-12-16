@@ -54,7 +54,7 @@ function fetchSuggestions() {
                 
                 const interests = document.getElementById('interests').value;
                 const budget = document.getElementById('budget-input').value;
-                
+
                 fetchTouristAttractions(latLng, interests);
                 fetchStayingOptions(latLng, budget);
                 fetchLocalFood(latLng, budget);
@@ -67,7 +67,32 @@ function fetchSuggestions() {
     }
 }
 
-// Function to fetch tourist attractions
+// Function to display details and place marker on the map
+function showDetailsAndMarker(place) {
+    // Clear existing marker
+    if (marker) marker.setMap(null);
+
+    // Add a marker for the selected place
+    marker = new google.maps.Marker({
+        position: place.geometry.location,
+        map: map,
+        title: place.name
+    });
+
+    // Update the details section
+    const details = document.getElementById('details-content');
+    const imageUrl = place.photos ? place.photos[0].getUrl({ maxWidth: 300 }) : 'default-image.jpg';
+    const mapLink = `https://www.google.com/maps/place/?q=place_id:${place.place_id}`;
+
+    details.innerHTML = `
+        <h3>${place.name}</h3>
+        <img src="${imageUrl}" alt="${place.name}">
+        <p>${place.vicinity || 'No address available'}</p>
+        <a href="${mapLink}" target="_blank">View on Google Maps</a>
+    `;
+}
+
+// Fetch and display tourist attractions
 function fetchTouristAttractions(latLng, interests) {
     const request = {
         location: latLng,
@@ -75,6 +100,7 @@ function fetchTouristAttractions(latLng, interests) {
         type: ['tourist_attraction'],
         keyword: interests
     };
+
     service.nearbySearch(request, function (results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             const attractionsList = document.getElementById('attractions-list');
@@ -82,11 +108,11 @@ function fetchTouristAttractions(latLng, interests) {
             results.forEach(result => {
                 const li = document.createElement('li');
                 const imageUrl = result.photos ? result.photos[0].getUrl({ maxWidth: 100, maxHeight: 100 }) : 'default-image.jpg';
-                
+
                 const img = document.createElement('img');
                 img.src = imageUrl;
                 img.alt = result.name;
-                
+
                 const infoDiv = document.createElement('div');
                 infoDiv.classList.add('info');
                 const h3 = document.createElement('h3');
@@ -99,6 +125,7 @@ function fetchTouristAttractions(latLng, interests) {
 
                 li.appendChild(img);
                 li.appendChild(infoDiv);
+                li.addEventListener('click', () => showDetailsAndMarker(result)); // Add click event
                 attractionsList.appendChild(li);
             });
         } else {
@@ -107,13 +134,14 @@ function fetchTouristAttractions(latLng, interests) {
     });
 }
 
-// Function to fetch staying options
+// Fetch and display staying options
 function fetchStayingOptions(latLng, budget) {
     const request = {
         location: latLng,
         radius: 5000,
         type: ['lodging']
     };
+
     service.nearbySearch(request, function (results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             const stayList = document.getElementById('stay-list');
@@ -125,7 +153,7 @@ function fetchStayingOptions(latLng, budget) {
                 const img = document.createElement('img');
                 img.src = imageUrl;
                 img.alt = result.name;
-                
+
                 const infoDiv = document.createElement('div');
                 infoDiv.classList.add('info');
                 const h3 = document.createElement('h3');
@@ -138,6 +166,7 @@ function fetchStayingOptions(latLng, budget) {
 
                 li.appendChild(img);
                 li.appendChild(infoDiv);
+                li.addEventListener('click', () => showDetailsAndMarker(result)); // Add click event
                 stayList.appendChild(li);
             });
         } else {
@@ -146,13 +175,14 @@ function fetchStayingOptions(latLng, budget) {
     });
 }
 
-// Function to fetch local food options
+// Fetch and display local food options
 function fetchLocalFood(latLng, budget) {
     const request = {
         location: latLng,
         radius: 5000,
         type: ['restaurant']
     };
+
     service.nearbySearch(request, function (results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             const foodList = document.getElementById('food-list');
@@ -164,7 +194,7 @@ function fetchLocalFood(latLng, budget) {
                 const img = document.createElement('img');
                 img.src = imageUrl;
                 img.alt = result.name;
-                
+
                 const infoDiv = document.createElement('div');
                 infoDiv.classList.add('info');
                 const h3 = document.createElement('h3');
@@ -177,6 +207,7 @@ function fetchLocalFood(latLng, budget) {
 
                 li.appendChild(img);
                 li.appendChild(infoDiv);
+                li.addEventListener('click', () => showDetailsAndMarker(result)); // Add click event
                 foodList.appendChild(li);
             });
         } else {
