@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Planner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBH5WDz7CXBV7Xrh1dL6Sg0ljVNkwytDYA&libraries=places&callback=initializeAutocomplete" async defer></script>
+</head>
+<body>
+    <header>
+        <h1>Travel Planner</h1>
+    </header>
+
+    <main>
+        <section class="input-section">
+            <label for="location-input">Enter a Location:</label>
+            <input type="text" id="location-input" placeholder="Enter city name or place">
+        </section>
+
+        <section class="input-section">
+            <label for="budget-input">Enter Budget:</label>
+            <input type="number" id="budget-input" placeholder="Budget in Rupees">
+        </section>
+
+        <section class="input-section">
+            <label for="days-input">Enter Number of Days:</label>
+            <input type="number" id="days-input" placeholder="Number of days">
+        </section>
+
+        <section class="input-section">
+            <label for="interests">Select Your Interests:</label>
+            <select id="interests">
+                <option value="history">History</option>
+                <option value="nature">Nature</option>
+                <option value="beach">Beach</option>
+                <option value="adventure">Adventure</option>
+                <option value="culture">Culture</option>
+            </select>
+        </section>
+
+        <button onclick="fetchSuggestions()">Get Suggestions</button>
+
+        <div class="results">
+            <section id="attractions" class="result-section">
+                <h2>Suggested Tourist Attractions</h2>
+                <ul id="attractions-list"></ul>
+            </section>
+
+            <section id="stay" class="result-section">
+                <h2>Suggested Staying Options</h2>
+                <ul id="stay-list"></ul>
+            </section>
+
+            <section id="food" class="result-section">
+                <h2>Suggested Local Food</h2>
+                <ul id="food-list"></ul>
+            </section>
+        </div>
+
+        <div id="map"></div> <!-- Google Map will be displayed here -->
+
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Travel Planner</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
