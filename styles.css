@@ -19,16 +19,91 @@ header {
     text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
 }
 
-/* Section Styles */
-section {
-    margin: 20px;
+/* Expandable Suggestion Tab */
+.expanded {
+    margin-bottom: 20px;
+    border: 2px solid #007bff; /* Blue border for expanded tab */
     padding: 15px;
-    background-color: white;
+    display: flex;
+    flex-direction: column; /* Allow the content to expand vertically */
+}
+
+/* Container for the map and details */
+.dynamic-container {
+    margin-top: 20px;
+    background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    flex-wrap: wrap; /* Ensure the content wraps if the screen size is small */
+}
+
+/* Suggestion Text (top part of the dynamic container) */
+.suggestion-text {
+    width: 100%;
+    text-align: center;
+}
+
+.suggestion-text h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 10px 0;
+}
+
+/* Dynamic map styling (on the bottom right) */
+.dynamic-map {
+    width: 48%;  /* Set to 48% to ensure there is space for the details */
+    height: 300px;
+    margin-bottom: 15px;
+}
+
+/* Details Section Styling (on the bottom left) */
+.dynamic-details {
+    width: 48%; /* Set to 48% to ensure space for the map */
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+.dynamic-details img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.dynamic-details p {
+    color: #555;
+}
+
+.dynamic-details h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Image carousel styling */
+.image-carousel {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+}
+
+.carousel-image {
+    max-width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Short summary and popularity indicator */
+.dynamic-details .summary {
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.dynamic-details .popularity {
+    font-weight: bold;
+    color: #f39c12;
 }
 
 /* Form Section Styling */
@@ -137,6 +212,7 @@ footer {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Details Section */
 #details {
     margin-top: 20px;
     padding: 15px;
@@ -158,74 +234,4 @@ footer {
     max-width: 300px;
     border-radius: 8px;
     margin: 10px 0;
-}
-.dynamic-container {
-    margin-top: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-}
-
-.dynamic-map {
-    width: 100%;
-    height: 300px;
-    margin-bottom: 15px;
-}
-
-.dynamic-details img {
-    max-width: 100%;
-    border-radius: 8px;
-    margin: 10px 0;
-}
-/* Expanded suggestion tab */
-.expanded {
-    margin-bottom: 20px;
-}
-
-/* Container for the map and details */
-.dynamic-container {
-    margin-top: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-}
-
-/* Dynamic map styling */
-.dynamic-map {
-    width: 100%;
-    height: 300px;
-    margin-bottom: 15px;
-}
-
-/* Details section styling */
-.dynamic-details {
-    font-size: 1rem;
-}
-
-.dynamic-details img {
-    max-width: 100%;
-    border-radius: 8px;
-    margin: 10px 0;
-}
-
-.dynamic-details p {
-    color: #555;
-}
-
-.dynamic-details h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
-}
-
-/* Short summary and popularity indicator */
-.dynamic-details .summary {
-    font-style: italic;
-    margin-bottom: 10px;
-}
-
-.dynamic-details .popularity {
-    font-weight: bold;
-    color: #f39c12;
 }

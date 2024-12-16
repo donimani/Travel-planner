@@ -69,7 +69,7 @@ function fetchSuggestions() {
     }
 }
 
-// Function to display map, details, short summary, and popularity indicator
+// Function to display map, details, short summary, popularity indicator with image carousel
 function displayDynamicTab(place, parentElement) {
     // Toggle expansion for each suggestion tab
     if (activeTab && activeTab !== parentElement) {
@@ -80,21 +80,30 @@ function displayDynamicTab(place, parentElement) {
     // Mark the current active tab
     activeTab = parentElement;
 
-    // Expand the clicked suggestion tab
+    // Expand the clicked suggestion tab from all sides
     parentElement.classList.toggle('expanded');
 
     // Create a container for the map and details
     const dynamicContainer = document.createElement('div');
     dynamicContainer.className = 'dynamic-container';
 
-    // Add a map container
+    // Add the name and formatted address (at the top)
+    const suggestionText = document.createElement('div');
+    suggestionText.className = 'suggestion-text';
+    suggestionText.innerHTML = `
+        <h3>${place.name}</h3>
+        <p>${place.formatted_address || 'No address available'}</p>
+    `;
+    dynamicContainer.appendChild(suggestionText);
+
+    // Add a map container (bottom-right)
     const mapContainer = document.createElement('div');
     mapContainer.className = 'dynamic-map';
-    mapContainer.style.width = '100%';
+    mapContainer.style.width = '48%';  // Adjusted width for layout
     mapContainer.style.height = '300px';
     dynamicContainer.appendChild(mapContainer);
 
-    // Add a details container with additional information (summary, popularity)
+    // Add a details container with additional information (bottom-left)
     const detailsContainer = document.createElement('div');
     detailsContainer.className = 'dynamic-details';
     const imageUrl = place.photos ? place.photos[0].getUrl({ maxWidth: 300 }) : 'default-image.jpg';
@@ -103,14 +112,24 @@ function displayDynamicTab(place, parentElement) {
     const summary = place.types.join(', ') || 'No description available.';
     const popularity = place.rating ? `${place.rating} / 5` : 'Not rated yet';
 
+    // Create the carousel for images
+    const carousel = document.createElement('div');
+    carousel.className = 'image-carousel';
+    const images = place.photos || [];
+    images.forEach((photo, index) => {
+        const img = document.createElement('img');
+        img.src = photo.getUrl({ maxWidth: 300 });
+        img.alt = `${place.name} image ${index + 1}`;
+        img.classList.add('carousel-image');
+        carousel.appendChild(img);
+    });
+
     detailsContainer.innerHTML = `
-        <h3>${place.name}</h3>
-        <img src="${imageUrl}" alt="${place.name}">
-        <p>${place.formatted_address || 'No address available'}</p>
         <p><strong>Summary:</strong> ${summary}</p>
         <p><strong>Popularity:</strong> ${popularity}</p>
         <a href="${mapLink}" target="_blank">View on Google Maps</a>
     `;
+    detailsContainer.appendChild(carousel);
     dynamicContainer.appendChild(detailsContainer);
 
     // Insert the dynamic container after the clicked suggestion
